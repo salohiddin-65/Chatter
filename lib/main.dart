@@ -1,3 +1,4 @@
+import 'package:chatter/theme.dart';
 import 'package:chatter/view/screens/screens.dart';
 import 'package:flutter/material.dart';
 
@@ -10,10 +11,13 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      theme: ,
+    return MaterialApp(
       title: 'Chatter',
-      home: HomeScreen(),
+      theme: AppTheme.light(),
+      darkTheme: AppTheme.dark(),
+      themeMode: ThemeMode.dark,
+      debugShowCheckedModeBanner: false,
+      home: const HomeScreen(),
     );
   }
 }
