@@ -124,6 +124,7 @@ class _BottomNavigationBarState extends State<_BottomNavigationBar> {
           padding: const EdgeInsets.only(top: 16, left: 8, right: 8),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               _NavigationBarItem(
                 index: 0,
@@ -134,7 +135,7 @@ class _BottomNavigationBarState extends State<_BottomNavigationBar> {
               ),
               _NavigationBarItem(
                 index: 1,
-                lable: 'Notifications',
+                lable: 'Notification',
                 icon: CupertinoIcons.bell_solid,
                 isSelected: (selectedIndex == 1),
                 onTap: handleItemSelected,
