@@ -1,8 +1,12 @@
+import 'package:chatter/helper/helpers.dart';
 import 'package:chatter/theme.dart';
 import 'package:chatter/view/pages/calls_page.dart';
 import 'package:chatter/view/pages/contacts_page.dart';
 import 'package:chatter/view/pages/messages_page.dart';
 import 'package:chatter/view/pages/notifications_page.dart';
+import 'package:chatter/widgets/avatar.dart';
+import 'package:chatter/widgets/glowing_action_button.dart';
+import 'package:chatter/widgets/icon_buttons.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -15,6 +19,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final ValueNotifier<int> pageIndex = ValueNotifier(0);
+  final ValueNotifier<String> title = ValueNotifier('Messages');
 
   final pages = const [
     MessagesPage(),
@@ -23,15 +28,52 @@ class _HomeScreenState extends State<HomeScreen> {
     ContactsPage(),
   ];
 
+  final pageTitles = const [
+    'Message',
+    'Notifications',
+    'Calls',
+    'Contacts',
+  ];
+
+  void _onNavigationItemSelected(index) {
+    title.value = pageTitles[index];
+    pageIndex.value = index;
+  }
+
   @override
   Widget build(BuildContext context) {
-    pageIndex.addListener(() {
-      print(pageIndex.value);
-    });
     return Scaffold(
       appBar: AppBar(
+        iconTheme: Theme.of(context).iconTheme,
         backgroundColor: Colors.transparent,
         elevation: 0,
+        centerTitle: true,
+        title: ValueListenableBuilder(
+          valueListenable: title,
+          builder: (BuildContext context, String value, _) {
+            return Text(
+              value,
+              style: const TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 16,
+              ),
+            );
+          },
+        ),
+        leadingWidth: 54.0,
+        leading: Align(
+          alignment: Alignment.centerRight,
+          child: IconBackground(
+            icon: Icons.search,
+            onTap: () {},
+          ),
+        ),
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: 24.0),
+            child: Avatar.small(url: Helpers.randomPictureUrl()),
+          ),
+        ],
       ),
       body: ValueListenableBuilder(
         valueListenable: pageIndex,
@@ -40,9 +82,7 @@ class _HomeScreenState extends State<HomeScreen> {
         },
       ),
       bottomNavigationBar: _BottomNavigationBar(
-        onItemSelected: (index) {
-          pageIndex.value = index;
-        },
+        onItemSelected: _onNavigationItemSelected,
       ),
     );
   }
@@ -72,41 +112,63 @@ class _BottomNavigationBarState extends State<_BottomNavigationBar> {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      top: false,
-      bottom: true,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: [
-          _NavigationBarItem(
-            index: 0,
-            lable: 'Messages',
-            icon: CupertinoIcons.bubble_left_bubble_right_fill,
-            isSelected: (selectedIndex == 0),
-            onTap: handleItemSelected,
+    final brightness = Theme.of(context).brightness;
+    return Card(
+      color: (brightness == Brightness.light) ? Colors.transparent : null,
+      elevation: 0,
+      margin: const EdgeInsets.all(0),
+      child: SafeArea(
+        top: false,
+        bottom: true,
+        child: Padding(
+          padding: const EdgeInsets.only(top: 16, left: 8, right: 8),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              _NavigationBarItem(
+                index: 0,
+                lable: 'Messages',
+                icon: CupertinoIcons.bubble_left_bubble_right_fill,
+                isSelected: (selectedIndex == 0),
+                onTap: handleItemSelected,
+              ),
+              _NavigationBarItem(
+                index: 1,
+                lable: 'Notifications',
+                icon: CupertinoIcons.bell_solid,
+                isSelected: (selectedIndex == 1),
+                onTap: handleItemSelected,
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 8.0,
+                  vertical: 8.0,
+                ),
+                child: GlowingActionButton(
+                  color: AppColors.secondary,
+                  icon: CupertinoIcons.add,
+                  onPressed: () {
+                    print('TODO on new message');
+                  },
+                ),
+              ),
+              _NavigationBarItem(
+                index: 2,
+                lable: 'Calls',
+                icon: CupertinoIcons.phone_fill,
+                isSelected: (selectedIndex == 2),
+                onTap: handleItemSelected,
+              ),
+              _NavigationBarItem(
+                index: 3,
+                lable: 'Contacts',
+                icon: CupertinoIcons.person_2_fill,
+                isSelected: (selectedIndex == 3),
+                onTap: handleItemSelected,
+              ),
+            ],
           ),
-          _NavigationBarItem(
-            index: 1,
-            lable: 'Notifications',
-            icon: CupertinoIcons.bell_solid,
-            isSelected: (selectedIndex == 1),
-            onTap: handleItemSelected,
-          ),
-          _NavigationBarItem(
-            index: 2,
-            lable: 'Calls',
-            icon: CupertinoIcons.phone_fill,
-            isSelected: (selectedIndex == 2),
-            onTap: handleItemSelected,
-          ),
-          _NavigationBarItem(
-            index: 3,
-            lable: 'Contacts',
-            icon: CupertinoIcons.person_2_fill,
-            isSelected: (selectedIndex == 3),
-            onTap: handleItemSelected,
-          ),
-        ],
+        ),
       ),
     );
   }
@@ -136,7 +198,7 @@ class _NavigationBarItem extends StatelessWidget {
         onTap(index);
       },
       child: SizedBox(
-        height: 70,
+        width: 70,
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
